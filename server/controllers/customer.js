@@ -73,6 +73,7 @@ exports.view = async (req,res) => {
        console.log(error); 
     }
 };
+
 exports.survey_report_today = async (req,res) => {
     try {
         
@@ -91,7 +92,7 @@ exports.survey_report_today = async (req,res) => {
        console.log(error); 
     }
 };
-exports.survey_report_last_week = async (req,res) => {
+exports.survey_report_week = async (req,res) => {
     try {
 
         let query = `SELECT COUNT(DISTINCT(event_id)) AS counts FROM transaction_survey WHERE DATE_FORMAT(entry_date, "%Y%m%d") BETWEEN CURDATE()-7 AND CURDATE()`;
