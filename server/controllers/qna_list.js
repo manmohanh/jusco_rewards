@@ -16,7 +16,7 @@ exports.read = async (req,res) => {
             if(err) throw err;
             data2 = result2;
             len2 = result2.length;
-            res.json([
+            res.status(200).json([
                 {
                     body:data2,
                     itemCount:len2

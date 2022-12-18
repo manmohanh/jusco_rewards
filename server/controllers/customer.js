@@ -24,7 +24,7 @@ exports.create = async (req,res) => {
     const data = {event_id,house_id,customer_name,mobile_no,address,zone,area,location,latitude,longitude,feedback};
     await db.query('INSERT INTO metadata_customer SET ?',data, (err,result) => {
         if(err){
-            return res.json({
+            return res.status(200).json({
                 success:false,
                 body:err
             })
@@ -46,10 +46,9 @@ exports.create = async (req,res) => {
 //report
 exports.report = async (req,res) => {
     try {
-
         await db.query('SELECT metadata_customer.customer_name AS name,metadata_customer.mobile_no AS mobile,transaction_survey.house_id AS house_id,metadata_customer.address AS address,metadata_customer.zone AS zone,metadata_customer.area AS area,metadata_customer.location AS locality,SUM(transaction_survey.marks) AS totalMarks,metadata_customer.feedback AS feedback,transaction_survey.entry_date AS serveyedOn  FROM metadata_customer JOIN transaction_survey ON metadata_customer.house_id=transaction_survey.house_id GROUP BY house_id ORDER BY transaction_survey.entry_date DESC LIMIT 10 OFFSET 0' ,function(err,result){
         if(err) throw err;
-        res.json(result);
+        res.status(200).json(result);
        }); 
     } catch (error) {
         console.log(error)
@@ -65,7 +64,7 @@ exports.view = async (req,res) => {
            }); 
         await db.query("SELECT metadata_qna_list.question AS question,metadata_qna_list.choice AS choice,transaction_survey.marks AS marks FROM metadata_qna_list JOIN transaction_survey ON metadata_qna_list.id = transaction_survey.QnA_id WHERE house_id=" +req.params.house_id,
         (err,result) => {
-            res.json({
+            res.status(200).json({
                 user:user,
                 body:result
                 });
@@ -84,7 +83,7 @@ exports.survey_report_today = async (req,res) => {
                 console.log(err);
             }
             console.log(result);
-            res.json({
+            res.status(200).json({
                 counts:result
             });
         })
@@ -101,7 +100,7 @@ exports.survey_report_last_week = async (req,res) => {
             if(err) {
                 console.log(err);
             }
-            res.json({
+            res.status(200).json({
                 result
             });
         })
@@ -118,7 +117,7 @@ exports.survey_report_month = async (req,res) => {
             if(err) {
                 console.log(err);
             }
-            res.json({
+            res.status(200).json({
                 result
             });
         })
