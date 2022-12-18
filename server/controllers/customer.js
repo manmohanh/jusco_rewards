@@ -19,7 +19,7 @@ exports.create = async (req,res) => {
             qna
         } = req.body;
 
-    const event_id = Math.floor(Math.random()*1000) + new Date().getTime();
+    const event_id = Math.floor(Math.random()*1000) + new Date().getTime()
 
     const data = {event_id,house_id,customer_name,mobile_no,address,zone,area,location,latitude,longitude,feedback};
     await db.query('INSERT INTO metadata_customer SET ?',data, (err,result) => {
