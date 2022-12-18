@@ -74,6 +74,14 @@ exports.view = async (req,res) => {
     }
 };
 
+exports.search = async (req,res) => {
+    try {
+        
+    } catch (error) {
+       console.log(error) 
+    }
+}
+
 exports.survey_report_today = async (req,res) => {
     try {
         
