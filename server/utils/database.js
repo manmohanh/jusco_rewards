@@ -1,6 +1,6 @@
-const { createConnection } = require('mysql');
+const mysql = require('mysql');
 
-const con = createConnection({
+const connection = mysql.createConnection({
     host:"localhost",
     user:"rewards",
     password:"rewards",
@@ -8,10 +8,12 @@ const con = createConnection({
 
 })
 
-con.connect((err)=>{
-    if(err){
-        console.log(err);
-    }
+connection.connect((err)=> {
+    if (err) {
+        console.error('error connecting: ' + err.stack);
+        return;
+      }
+      console.log('connected');
 });
 
-module.exports = con;
+module.exports = connection;

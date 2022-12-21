@@ -3,11 +3,12 @@ const fileUpload = require('express-fileupload');
 const { format } = require('../utils/database');
 
 //save customer
-exports.create = async (req,res) => {
+exports.create =  async (req,res) => {
     try {
         const {
             house_id,
             customer_name,
+            user_role,
             mobile_no,
             address,
             zone,
@@ -16,30 +17,42 @@ exports.create = async (req,res) => {
             latitude,
             longitude,
             feedback,
-            qna
+            qnaObj
         } = req.body;
 
     const event_id = Math.floor(Math.random()*1000) + new Date().getTime()
 
-    const data = {event_id,house_id,customer_name,mobile_no,address,zone,area,location,latitude,longitude,feedback};
-    await db.query('INSERT INTO metadata_customer SET ?',data, (err,result) => {
-        if(err){
-            return res.status(200).json({
-                success:false,
-                body:err
-            })
-        }
-        res.json({
-            success:true,
-            body:result
+    const data1 = {event_id,house_id,customer_name,mobile_no,address,zone,area,location,latitude,longitude,feedback};
+    const result1 = await new Promise((resolve,reject) => {
+         db.query('INSERT INTO metadata_customer SET ?',data1,
+        (err,result) => {
+           if(err) reject(err)
+            resolve(result)
+       })
+    })
+  
+    const houseId = await new Promise((resolve,reject) => {
+        db.query("SELECT id FROM metadata_customer WHERE event_id = ?",event_id,
+        (err,result) => {
+            if(err) reject(err)
+             resolve(result)
         })
-    });
-    
-    //
-    create_transaction(event_id,qna);
-    
+    })
+
+    for(const i in qnaObj){
+        const data = {event_id,house_id:houseId[0].id,QnA_id:i,marks:qnaObj[i],image:"",entry_by:user_role,entry_date:new Date().toISOString()}
+            await db.query('INSERT INTO transaction_survey SET ?',data, 
+            (err,result) => {
+            if(err) throw err;
+        });
+    }
+    res.status(200).json({
+        success:true,
+        body:result1, 
+    }) 
+
     } catch (error) {
-        return res.status(400).json({body:error})
+        console.log(error)
     }
 };
 
@@ -76,12 +89,11 @@ exports.view = async (req,res) => {
 
 exports.search = async (req,res) => {
     try {
-        
+        //
     } catch (error) {
        console.log(error) 
     }
 }
-
 exports.survey_report_today = async (req,res) => {
     try {
         
@@ -134,41 +146,3 @@ exports.survey_report_month = async (req,res) => {
        console.log(error); 
     }
 };
-
-
-
-
-//create transation
-async function create_transaction(event_id,qna){
-    
-    await db.query("SELECT house_id FROM metadata_customer WHERE event_id = ?",event_id,(err,result) => {
-        if(err) return false;
-
-        const houseId= result[0].house_id 
-      
-        for(let i=0;i<qna.length;i++){
-
-            // if (!req.files || Object.keys(req.files).length === 0) {
-            //     return res.status(400).send('No files were uploaded.');
-            //   }
-            //   var file = req.files.image;
-            //   var uploadedPath = 'public/image/'+file.name;
-            
-            //   file.mv(uploadedPath,function(err){
-            //     if(err){
-            //         return res.status(500).send(err);
-            //     }
-            //     console.log('File uploaded!');
-            //   });
-            
-            const data = {event_id,house_id:houseId,QnA_id:i+1,marks:qna[i],image:"",entry_by:houseId,entry_date:new Date().toISOString()}
-             db.query('INSERT INTO transaction_survey SET ?',data, (err,result) => {
-                if(err){
-                    return false;
-                }
-                return true;
-            });
-    
-        }
-    });
-}
