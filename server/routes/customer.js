@@ -1,10 +1,10 @@
 const router = require('express').Router();
-const {create,report,search,view,survey_report_today,survey_report_week,survey_report_month} = require('../controllers/customer');
+const {create_customer,survey_report,search,view,survey_report_today,survey_report_week,survey_report_month} = require('../controllers/customer');
 
 //create customer
-router.post('/create',create);
+router.post('/create',create_customer);
 //reports
-router.get('/reports',report);
+router.get('/reports',survey_report);
 
 //search
 router.get('/search/:key',search)
